@@ -343,7 +343,7 @@ int main( int argc, char* argv[] ) {
 
     std::string json = sdf_atlas.json( height );
     std::ofstream json_file;
-    json_file.open( res_filename + ".js" );
+    json_file.open( res_filename + ".json" );
     if ( !json_file ) {
         std::cout << "Error writing json file." << std::endl;
     }

@@ -115,18 +115,18 @@ std::string SdfAtlas::json( float tex_height, bool flip_texcoord_y ) const {
 
     std::stringstream ss;
     ss << "{" << std::endl;
-    ss << "    ix: " << sdf_size / tex_width << ", " << std::endl;
-    ss << "    iy: " << sdf_size / tex_height << ", " << std::endl;
-    ss << "    row_height: " << ( row_height + 2.0f * sdf_size ) / tex_height << ", " << std::endl;
-    ss << "    aspect: " <<  tex_width / tex_height << ", " << std::endl;
-    ss << "    ascent: " << font->ascent * scaley << ", " << std::endl;
-    ss << "    descent: " << fabsf( font->descent * scaley ) << ", " << std::endl;
-    ss << "    line_gap: " << font->line_gap * scaley << ", " << std::endl;
-    ss << "    cap_height: " << gxcap.max.y * scaley  << ", " << std::endl;
-    ss << "    x_height: " << gx.max.y * scaley  << ", " << std::endl;
-    ss << "    space_advance: " << gspace.advance_width * scalex << ", " << std::endl << std::endl;
+    ss << "    \"ix\": " << sdf_size / tex_width << ", " << std::endl;
+    ss << "    \"iy\": " << sdf_size / tex_height << ", " << std::endl;
+    ss << "    \"row_height\": " << ( row_height + 2.0f * sdf_size ) / tex_height << ", " << std::endl;
+    ss << "    \"aspect\": " <<  tex_width / tex_height << ", " << std::endl;
+    ss << "    \"ascent\": " << font->ascent * scaley << ", " << std::endl;
+    ss << "    \"descent\": " << fabsf( font->descent * scaley ) << ", " << std::endl;
+    ss << "    \"line_gap\": " << font->line_gap * scaley << ", " << std::endl;
+    ss << "    \"cap_height\": " << gxcap.max.y * scaley  << ", " << std::endl;
+    ss << "    \"x_height\": " << gx.max.y * scaley  << ", " << std::endl;
+    ss << "    \"space_advance\": " << gspace.advance_width * scalex << ", " << std::endl << std::endl;
     
-    ss << "    chars: { " << std::endl;
+    ss << "    \"chars\": { " << std::endl;
 
     for ( size_t igr = 0; igr < glyph_rects.size(); ++igr ) {
         const GlyphRect& gr = glyph_rects[ igr ];
@@ -142,21 +142,22 @@ std::string SdfAtlas::json( float tex_height, bool flip_texcoord_y ) const {
         char ucp[32];
         snprintf( ucp, 32, "    \"\\u%04x\": {", gr.codepoint );
         ss << ucp << std::endl;
-        ss << "        codepoint: " << gr.codepoint << "," << std::endl;
-        ss << "        rect: [";
+        ss << "        \"codepoint\": " << gr.codepoint << "," << std::endl;
+        ss << "        \"rect\": [";
         ss << gr.x0 / tex_width << ", " << tcy0 << ", ";
         ss << gr.x1 / tex_width << ", " << tcy1 << "]," << std::endl;
-        ss << "        bearing_x: " << g.left_side_bearing * scalex << "," << std::endl;
-        ss << "        advance_x: " << g.advance_width * scalex << "," << std::endl;
-        ss << "        flags: " << (int)g.char_type << std::endl;
+        ss << "        \"bearing_x\": " << g.left_side_bearing * scalex << "," << std::endl;
+        ss << "        \"advance_x\": " << g.advance_width * scalex << "," << std::endl;
+        ss << "        \"flags\": " << (int)g.char_type << std::endl;
         ss << "    }";
         if ( igr != glyph_rects.size() - 1 ) ss << ",";
         ss << std::endl;
     }
 
-    ss << "    }, // end chars" << std::endl;
+    ss << "    }," << std::endl;
 
-    ss << "    kern: {" << std::endl;
+    ss << "    \"kern\": {" << std::endl;
+    bool first_kern = true;
 
     for ( auto kv : font->kern_map ) {
         uint32_t kern_pair = kv.first;
@@ -182,15 +183,19 @@ std::string SdfAtlas::json( float tex_height, bool flip_texcoord_y ) const {
                 if ( first_found && second_found ) {
                     char uckern[ 64 ];
                     snprintf( uckern, 64, "        \"\\u%04x\\u%04x\" : ", kern_first, kern_second );
-                    ss << uckern << kern_value << "," << std::endl;
+                    if ( !first_kern ) ss << "," << std::endl;
+                    ss << uckern << kern_value;
+                    first_kern = false;
                 }
             }
         }
     }
 
-    ss << "    } // end kern" << std::endl;
+    if ( !first_kern ) ss << std::endl;
 
-    ss << "}; // end font" << std::endl;    
+    ss << "    }" << std::endl;
+
+    ss << "}" << std::endl;    
     
     return ss.str();
 }
