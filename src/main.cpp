@@ -24,9 +24,8 @@
 #include <fstream>
 #include <cstdio>
 #include <cstdlib>
-#include <GL/glew.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
-#include <GL/gl.h>
 
 #include "float2.h"
 #include "args_parser.h"
@@ -217,11 +216,8 @@ int main( int argc, char* argv[] ) {
     glfwSetWindowSize( window, 640, 480 );
     glfwMakeContextCurrent( window );
 
-	GLenum err = glewInit();
-    if ( err != GLEW_OK ) {
-        std::cerr << "GLEW init error: " << glewGetErrorString( err ) << std::endl;
-        exit( 1 );
-    }
+	int version = gladLoadGL(glfwGetProcAddress);
+    std::cout << "GLAD loaded, version: " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
 
     // Reading command line parameters
 

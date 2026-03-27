@@ -1,8 +1,8 @@
 CCPP=g++
-CPPFLAGS=-c -Wall -O2 -std=c++14
-CFLAGS=-c -Wall -O2
+CPPFLAGS=-c -Wall -O2 -std=c++14 -Ithird_party/glad/include
+CFLAGS=-c -Wall -O2 -Ithird_party/glad/include
 
-LIBS=-lGLEW -lGL -lglfw
+LIBS=-lGL -lglfw
 LDFLAGS=
 DSFLAGS=-DNDEBUG
 
@@ -14,7 +14,8 @@ SOURCES= \
 		src/glyph_painter.cpp \
 		src/sdf_atlas.cpp \
 		src/font.cpp \
-		src/main.cpp
+		src/main.cpp \
+		third_party/glad/src/gl.c
 
 VPATH=$(dir $(SOURCES))
 
@@ -35,6 +36,9 @@ $(EXECUTABLE): $(BINDEST)
 
 $(BINDIR)%.o:%.cpp
 	$(CCPP) $(CPPFLAGS) $(DSFLAGS) -MMD $< -o $(addprefix $(BINDIR), $(notdir $@))
+
+$(BINDIR)%.o:%.c
+	$(CCPP) $(CFLAGS) $(DSFLAGS) -MMD $< -o $(addprefix $(BINDIR), $(notdir $@))
 
 .PHONY: all bindir clean
 
